@@ -24,6 +24,12 @@
 
      - name: Install dependencies
        run: flutter pub get
+       
+     - name: Clean the build directory
+       run: flutter clean
+
+     - name: Install dependencies
+       run: flutter pub get
  
      - name: Build APK
        run: flutter build apk --release
