@@ -39,3 +39,10 @@
        with:
          name: my-flutter-app-apk
          path: build/app/outputs/flutter-apk/app-release.apk
+
+     - name: Upload APK to InstallOnAir
+       run: |
+         curl -X POST "https://installonair.com/" \
+         -F "file=@build/app/outputs/flutter-apk/app-release.apk" \
+         -F "message=New APK from GitHub Actions" \
+         -F "release_notes=Uploaded automatically from GitHub Actions"
