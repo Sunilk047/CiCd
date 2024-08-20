@@ -46,3 +46,36 @@
          -F "file=@build/app/outputs/flutter-apk/app-release.apk" \
          -F "message=New APK from GitHub Actions" \
          -F "release_notes=Uploaded automatically from GitHub Actions"
+
+
+     - name: Clean up old build artifacts
+       run: |
+         # GitHub API URL
+         API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts"
+         
+         # Get the list of artifacts
+         ARTIFACTS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
+         
+         # Get the current timestamp
+         CURRENT_TIME=$(date +%s)
+         
+         # Iterate over each artifact
+         echo "$ARTIFACTS" | jq -c '.artifacts[]' | while read -r ARTIFACT; do
+           NAME=$(echo "$ARTIFACT" | jq -r '.name')
+           ID=$(echo "$ARTIFACT" | jq -r '.id')
+           CREATED_AT=$(echo "$ARTIFACT" | jq -r '.created_at')
+         
+           # Convert creation time to timestamp
+           ARTIFACT_TIME=$(date -d "$CREATED_AT" +%s)
+         
+           # Calculate age of the artifact in days
+           AGE=$(( (CURRENT_TIME - ARTIFACT_TIME) / 86400 ))
+         
+           # Delete if older than 1 day
+           if [ "$AGE" -gt 1 ]; then
+             echo "Deleting artifact: $NAME"
+             curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" "$API_URL/$ID"
+           fi
+         done
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
