@@ -48,7 +48,7 @@
      - name: Clean up old build artifacts
        run: |
          # GitHub API URL
-         API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts"
+         API_URL="https://api.github.com/repos/Sunilk047/CiCd/actions/artifacts"
          
          # Get the list of artifacts
          ARTIFACTS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
